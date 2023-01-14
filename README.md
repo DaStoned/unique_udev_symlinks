@@ -27,7 +27,7 @@ lsusb -d 0403:6015 -v
 To install udev rules which create the symlink with device name, link the following files to `/etc/udev/rules.d` and restart udev:
 
 ```
-$ cd ftdi_ids
+$ cd unique_udev_symlinks
 $ sudo find "$(pwd)" -name "*.rules" -exec ln -s "{}" /etc/udev/rules.d/ \;
 $ sudo systemctl restart udev
 ```
