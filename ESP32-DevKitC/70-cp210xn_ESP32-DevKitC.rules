@@ -1,0 +1,18 @@
+# udev rules to create symlinks with fixed names for a device using its serial number 
+
+# CP2102N/CP2104N with idVendor=10c4, idProduct=ea60
+#
+# Instructions:
+# 1. Copy udev rules and restart daemon:
+#   $ sudo ln -s "$PWD/70-cp210xn_ESP32-DevKitC.rules" /etc/udev/rules.d/ && sudo systemctl restart udev
+# 2. Disconnect and connect the board to USB
+
+# Espressif ESP32-DevKitC with CP2102N.
+# Sample serial in chip is "7063b99e4b74ea11b6f52208cf25bb41" where only first
+# 10 chars seem to be unique. We cut the serial down to those and create a
+# symlink from the result, e.g. "/dev/EDK-7063b99e4b"
+SUBSYSTEMS=="usb", KERNEL=="ttyUSB*", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{manufacturer}=="Silicon Labs", ATTRS{product}=="CP2102N USB to UART Bridge Controller",  PROGRAM="/usr/bin/awk -- 'BEGIN { print substr(\"$attr{serial}\",1,10) }'" SYMLINK+="EDK-%c", GROUP="dialout", MODE="0660"
+
+# Wemos LOLIN32 with CP2104N, sample serial in chip is "01DFA32C".
+# We create a symlink "EDK-01DFA32C" (cropping to first 10 chars just in case).
+SUBSYSTEMS=="usb", KERNEL=="ttyUSB*", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{manufacturer}=="Silicon Labs", ATTRS{product}=="CP2104 USB to UART Bridge Controller",  PROGRAM="/usr/bin/awk -- 'BEGIN { print substr(\"$attr{serial}\",1,10) }'" SYMLINK+="EDK-%c", GROUP="dialout", MODE="0660"

@@ -1,0 +1,10 @@
+# udev rules to create symlinks with fixed names for a device using its serial number 
+
+# SEGGER J-Link with idVendor=1366, idProduct=0105
+#
+# Instructions:
+# 1. Copy udev rules and restart daemon:
+#   $ sudo ln -s "$PWD/70-segger-jlink.rules" /etc/udev/rules.d/ && sudo systemctl restart udev
+# 2. Disconnect and connect the board to USB
+
+SUBSYSTEMS=="usb", KERNEL=="ttyACM*", ATTRS{idVendor}=="1366", ATTRS{idProduct}=="0105", ATTRS{manufacturer}=="SEGGER", ATTRS{product}=="J-Link", SYMLINK+="$attr{serial}", GROUP="dialout", MODE="0660"

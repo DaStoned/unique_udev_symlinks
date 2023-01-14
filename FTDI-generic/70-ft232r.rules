@@ -1,0 +1,15 @@
+# udev rules to create symlinks with fixed names for a device using its serial number 
+
+# FT232R with idVendor=0403, idProduct=6001/6015
+# NB! This requires the on-board EEPROM to be programmed with a serial number
+# which is not always the case. I generate and program the
+# serials myself using "eeprom_ft232r.conf" (instructions inside).
+#
+# Instructions:
+# 1. Copy udev rules and restart daemon:
+#   $ sudo ln -s "$PWD/70-ft232r.rules" /etc/udev/rules.d/ && sudo systemctl restart udev
+# 2. Disconnect and connect the board to USB
+
+SUBSYSTEMS=="usb", KERNEL=="ttyUSB*", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{manufacturer}=="FTDI", ATTRS{product}=="FT232R USB UART", SYMLINK+="$attr{serial}", GROUP="dialout", MODE="0660"
+SUBSYSTEMS=="usb", KERNEL=="ttyUSB*", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6015", ATTRS{manufacturer}=="FTDI", ATTRS{product}=="UMFT230XB", SYMLINK+="$attr{serial}", GROUP="dialout", MODE="0660"
+

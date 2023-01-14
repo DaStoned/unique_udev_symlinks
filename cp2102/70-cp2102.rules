@@ -1,0 +1,11 @@
+# udev rules to create symlinks with fixed names for a device using its serial number 
+
+# CP2102 with idVendor=10c4, idProduct=ea06
+#
+# Instructions:
+# 1. Copy udev rules and restart daemon:
+#   $ sudo ln -s "$PWD/70-cp2102.rules" /etc/udev/rules.d/ && sudo systemctl restart udev
+# 2. Disconnect and connect the board to USB
+
+SUBSYSTEMS=="usb", KERNEL=="ttyUSB*", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{manufacturer}=="Silicon Labs", ATTRS{product}=="CP2102 USB to UART Bridge Controller", SYMLINK+="CP-$attr{serial}", GROUP="dialout", MODE="0660"
+

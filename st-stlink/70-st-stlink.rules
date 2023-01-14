@@ -1,0 +1,13 @@
+# udev rules to create symlinks with fixed names for a device using its serial number 
+
+# STM32 STLink with idVendor=0483, idProduct=374b
+# Note: only last 8 characters of serial number are used, 
+# e.g. "0671FF555755846687082946" becomes "/dev/stlink-87082946"
+#
+# Instructions:
+# 1. Copy udev rules and restart daemon:
+#   $ sudo ln -s "$PWD/70-st-stlink.rules" /etc/udev/rules.d/ && sudo systemctl restart udev
+# 2. Disconnect and connect the board to USB
+
+# USB-Serial on an ST Nucleo board (tested with NUCLEO-WB55RG, but probably applies to others)
+SUBSYSTEMS=="usb", KERNEL=="ttyACM*", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="374b", ATTRS{manufacturer}=="STMicroelectronics", ATTRS{product}=="STM32 STLink", PROGRAM="/usr/bin/awk -- 'BEGIN { print substr(\"$attr{serial}\", length(\"$attr{serial}\") - 8 + 1) }'", SYMLINK+="nucleo-%c", GROUP="dialout", MODE="0660"

@@ -1,0 +1,17 @@
+# udev rules to create symlinks with fixed names for a device using its serial number 
+
+# FT2232H with idVendor=0403, idProduct=6010
+# NB! This requires the on-board EEPROM to be programmed with a serial number
+# which is not the case for factory default devices. I generate and program the
+# serials myself using "eeprom_ft2232h_ESP-WROVER-KIT.conf" (instructions
+# inside).
+#
+# Instructions:
+# 1. Copy udev rules and restart daemon:
+#   $ sudo ln -s "$PWD/70-ft2232h_ESP-WROVER-KIT.rules" /etc/udev/rules.d/ && sudo systemctl restart udev
+# 2. Disconnect and connect the board to USB
+
+SUBSYSTEMS=="usb", ENV{.LOCAL_ifNum}="$attr{bInterfaceNumber}"
+SUBSYSTEMS=="usb", KERNEL=="ttyUSB*", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", ATTRS{manufacturer}=="Espressif", ATTRS{product}=="ESP-WROVER-KIT", ENV{.LOCAL_ifNum}=="00",  SYMLINK+="$attr{serial}_jtag", GROUP="dialout", MODE="0660"
+SUBSYSTEMS=="usb", KERNEL=="ttyUSB*", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", ATTRS{manufacturer}=="Espressif", ATTRS{product}=="ESP-WROVER-KIT", ENV{.LOCAL_ifNum}=="01",  SYMLINK+="$attr{serial}_uart", GROUP="dialout", MODE="0660"
+
