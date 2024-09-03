@@ -1,0 +1,17 @@
+# udev rules to create symlinks with fixed names for a device using its serial number 
+
+# Waveshare USB-TO-TTL adapters
+# Note: These devices don't have unique serial numbers, so we create a link with hardcoded name. 
+# This means yo can only connect a single device to your system
+#
+# Instructions:
+# 1. Copy udev rules and restart daemon:
+#   $ sudo ln -s "$PWD/70-waveshare.rules" /etc/udev/rules.d/ && sudo systemctl restart udev
+# 2. Disconnect and connect the board to USB
+
+# Waveshare USB-TO-TTL 8CH with idVendor=1a86, idProduct=55d9
+# Calculate true port number 0 from ttyCH9344USB0, ttyCH9344USB8, ttyCH9344USB16 etc
+SUBSYSTEMS=="usb", KERNEL=="ttyCH9344USB*", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d9", ATTRS{manufacturer}=="wch.cn", PROGRAM="/usr/bin/awk -- 'BEGIN { print substr(\"%k\", length(\"ttyCH9344USB\") + 1) %% 8 }'", SYMLINK+="wch_uart_%c", GROUP="dialout", MODE="0660"
+
+# Waveshare GPIO device (integrated with USB-TO-TTL)
+SUBSYSTEMS=="usb", KERNEL=="ch9344_iodev*", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d9", ATTRS{manufacturer}=="wch.cn", SYMLINK+="wch_iodev", GROUP="dialout", MODE="0660"
