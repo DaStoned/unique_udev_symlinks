@@ -11,7 +11,12 @@
 
 # Waveshare USB-TO-TTL 8CH with idVendor=1a86, idProduct=55d9
 # Calculate true port number 0 from ttyCH9344USB0, ttyCH9344USB8, ttyCH9344USB16 etc
-SUBSYSTEMS=="usb", KERNEL=="ttyCH9344USB*", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d9", ATTRS{manufacturer}=="wch.cn", PROGRAM="/usr/bin/awk -- 'BEGIN { print substr(\"%k\", length(\"ttyCH9344USB\") + 1) %% 8 }'", SYMLINK+="wch_uart_%c", GROUP="dialout", MODE="0660"
+SUBSYSTEMS=="usb", KERNEL=="ttyCH9344USB*", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d9", ATTRS{manufacturer}=="wch.cn", PROGRAM="/usr/bin/awk -- 'BEGIN { print substr(\"%k\", length(\"ttyCH9344USB\") + 1) %% 8 }'", SYMLINK+="wch8_uart_%c", GROUP="dialout", MODE="0660"
 
 # Waveshare GPIO device (integrated with USB-TO-TTL)
-SUBSYSTEMS=="usb", KERNEL=="ch9344_iodev*", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d9", ATTRS{manufacturer}=="wch.cn", SYMLINK+="wch_iodev", GROUP="dialout", MODE="0660"
+SUBSYSTEMS=="usb", KERNEL=="ch9344_iodev*", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d9", ATTRS{manufacturer}=="wch.cn", SYMLINK+="wch8_iodev", GROUP="dialout", MODE="0660"
+
+# Waveshare USB TO UART/I2C/SPI/JTAG 2CH
+# Calculate true port number 0/1 from ATTRS{bInterfaceNumber}=="00"/"02"
+SUBSYSTEMS=="usb", KERNEL=="ttyACM*", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55da", ATTRS{manufacturer}=="wch.cn", ENV{WCH_2CH_USB_UART}="1a86:55da"
+ENV{WCH_2CH_USB_UART}=="1a86:55da", SUBSYSTEMS=="usb", DRIVERS=="cdc_acm", PROGRAM="/usr/bin/awk -- 'BEGIN { print $attr{bInterfaceNumber} / 2 }'", SYMLINK+="wch2_uart_%c", GROUP="dialout", MODE="0660"
